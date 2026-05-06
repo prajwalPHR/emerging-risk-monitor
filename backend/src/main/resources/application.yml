@@ -1,16 +1,7 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
-
   datasource:
     url: jdbc:postgresql://localhost:5432/riskdb
     username: postgres
@@ -20,10 +11,24 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-    open-in-view: false   # optional but recommended
+    open-in-view: false
 
   flyway:
-    enabled: true         # ensure migrations run properly
+    enabled: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: admin
+    password: admin
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+  security:
+    user:
+      name: admin
+      password: admin
 
 management:
   endpoints:
@@ -32,5 +37,5 @@ management:
         include: "*"
 
 jwt:
-  secret: mysupersecretkeymysupersecretkey12345
+  secret: "mysupersecretkeymysupersecretkey12345"
   expiration: 86400000
