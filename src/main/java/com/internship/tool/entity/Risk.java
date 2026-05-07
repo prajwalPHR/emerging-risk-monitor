@@ -4,9 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "risks", indexes = {
+        @Index(name = "idx_status", columnList = "status"),
+        @Index(name = "idx_created_at", columnList = "createdAt")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Risk {
 
     @Id
@@ -14,8 +19,10 @@ public class Risk {
     private Long id;
 
     private String title;
+
     private String description;
+
     private String status;
 
-    private String aiDescription;
+    private int score;
 }
