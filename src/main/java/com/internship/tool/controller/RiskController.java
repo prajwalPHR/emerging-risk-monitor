@@ -8,6 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/risks")
+import jakarta.validation.Valid;
 public class RiskController {
 
     private final RiskService service;
@@ -19,6 +20,21 @@ public class RiskController {
     @GetMapping
     public List<Risk> getAll() {
         return service.getAllRisks();
+    }
+    @GetMapping
+    public ApiResponse<List<Risk>> getAll() {
+
+        List<Risk> risks = service.getAllRisks();
+
+        return new ApiResponse<>(
+                true,
+                "Risks fetched successfully",
+                risks
+        );
+    }
+    @PostMapping
+    public Risk createRisk(@Valid @RequestBody Risk risk) {
+        return repository.save(risk);
     }
 
     @GetMapping("/status/{status}")
