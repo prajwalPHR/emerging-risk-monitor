@@ -1,60 +1,37 @@
 package com.internship.tool.config;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 @Component
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class JwtAuthFilter implements Filter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+
+    public JwtAuthFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain)
-            throws ServletException, IOException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
-        String path = request.getRequestURI();
+        HttpServletRequest req = (HttpServletRequest) request;
 
-        // ✅ SKIP AUTH ENDPOINTS COMPLETELY
-        if (path.contains("/api/auth")) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        String header = request.getHeader("Authorization");
+        String header = req.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
-
             String token = header.substring(7);
 
-            if (jwtUtil.isValid(token)) {
-
-                String username = jwtUtil.getUsername(token);
-                String role = jwtUtil.getRole(token);
-
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                username,
-                                null,
-                                List.of(() -> "ROLE_" + role)
-                        );
-
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            }
+            // ✅ correct usage
+            String username = jwtUtil.extractUsername(token);
+            System.out.println("User: " + username);
         }
 
+        // ✅ IMPORTANT (no assignment)
         chain.doFilter(request, response);
     }
 }
