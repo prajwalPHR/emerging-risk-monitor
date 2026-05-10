@@ -1,9 +1,9 @@
 spring:
+
   datasource:
     url: jdbc:postgresql://localhost:5432/emerging_risk_monitor
     username: postgres
-    password: 1234
-
+    password: YOUR_LOCAL_POSTGRES_PASSWORD
     driver-class-name: org.postgresql.Driver
 
   jpa:
