@@ -1,18 +1,21 @@
 package com.internship.tool.repository;
 
 import com.internship.tool.entity.Risk;
-import org.springframework.data.jpa.repository.*;
-import org.springframework.stereotype.Repository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-@Repository
-public interface RiskRepository extends JpaRepository<Risk, Long> {
+public interface RiskRepository
+        extends JpaRepository<Risk, Long> {
 
-    // ✅ JOIN FETCH (avoid N+1)
-    @Query("SELECT r FROM Risk r")
-    List<Risk> findAllOptimized();
+    Page<Risk> findByTitleContainingIgnoreCase(
+            String keyword,
+            Pageable pageable
+    );
 
-    // ✅ Indexed query
     List<Risk> findByStatus(String status);
 }

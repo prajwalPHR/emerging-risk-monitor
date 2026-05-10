@@ -1,67 +1,88 @@
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid
-} from "recharts";
+import { useEffect, useState } from "react";
 
-function Dashboard() {
-  // Dummy stats (simulate API /stats)
-  const stats = {
-    total: 10,
-    high: 4,
-    medium: 3,
-    low: 3
+import API from "../api/axios";
+
+import Navbar from "../components/Navbar";
+import Loader from "../components/Loader";
+import RiskCard from "../components/RiskCard";
+import AddRisk from "../components/AddRisk";
+
+const Dashboard = () => {
+
+  const [risks, setRisks] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+
+    fetchRisks();
+
+  }, []);
+
+  const fetchRisks = async () => {
+
+    try {
+
+      const response =
+          await API.get("/risks");
+
+      setRisks(response.data);
+
+    } catch (err) {
+
+      setError("Failed to fetch risks");
+    }
+
+    finally {
+
+      setLoading(false);
+    }
   };
 
-  // Chart data
-  const chartData = [
-    { name: "High", value: stats.high },
-    { name: "Medium", value: stats.medium },
-    { name: "Low", value: stats.low }
-  ];
+  if (loading) {
+
+    return <Loader />;
+  }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Dashboard</h2>
 
-      {/* KPI Cards */}
-      <div style={{ display: "flex", gap: "20px" }}>
-        <div style={{ border: "1px solid", padding: "10px" }}>
-          <h4>Total Risks</h4>
-          <p>{stats.total}</p>
+    <div className="min-h-screen bg-gray-100">
+
+      <Navbar />
+
+      <div className="p-6">
+
+        <AddRisk fetchRisks={fetchRisks} />
+
+        <h1 className="text-3xl font-bold mb-6">
+          Risk Dashboard
+        </h1>
+
+        {error && (
+
+          <p className="text-red-500 mb-4">
+            {error}
+          </p>
+        )}
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          {risks.map((risk) => (
+
+            <RiskCard
+                key={risk.id}
+                risk={risk}
+            />
+          ))}
+
         </div>
 
-        <div style={{ border: "1px solid", padding: "10px" }}>
-          <h4>High</h4>
-          <p>{stats.high}</p>
-        </div>
-
-        <div style={{ border: "1px solid", padding: "10px" }}>
-          <h4>Medium</h4>
-          <p>{stats.medium}</p>
-        </div>
-
-        <div style={{ border: "1px solid", padding: "10px" }}>
-          <h4>Low</h4>
-          <p>{stats.low}</p>
-        </div>
       </div>
 
-      <br />
-
-      {/* Bar Chart */}
-      <BarChart width={400} height={300} data={chartData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Bar dataKey="value" />
-      </BarChart>
     </div>
   );
-}
+};
 
 export default Dashboard;

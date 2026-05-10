@@ -1,11 +1,9 @@
-server:
-  port: 8085
-
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:5432/riskdb
+    url: jdbc:postgresql://localhost:5432/emerging_risk_monitor
     username: postgres
-    password: postgres
+    password: 1234
+
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -17,3 +15,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8085

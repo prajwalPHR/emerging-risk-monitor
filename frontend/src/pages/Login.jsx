@@ -1,46 +1,86 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-function Login({ onLogin }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+import API from "../api/axios";
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+import Navbar from "../components/Navbar";
+import Loader from "../components/Loader";
+import RiskCard from "../components/RiskCard";
+import AddRisk from "../components/AddRisk";
 
-    // Dummy check
-    if (username === "admin" && password === "1234") {
-      localStorage.setItem("token", "dummy-jwt-token");
-      onLogin();
-    } else {
-      alert("Invalid credentials");
+const Dashboard = () => {
+
+  const [risks, setRisks] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+
+    fetchRisks();
+
+  }, []);
+
+  const fetchRisks = async () => {
+
+    try {
+
+      const response = await API.get("/risks");
+
+      setRisks(response.data);
+
+    } catch (err) {
+
+      setError("Failed to fetch risks");
+
+    } finally {
+
+      setLoading(false);
     }
   };
 
+  if (loading) {
+
+    return <Loader />;
+  }
+
   return (
-    <div>
-      <h2>Login</h2>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <br />
+    <div className="min-h-screen bg-gray-100">
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <br />
+      <Navbar />
 
-        <button type="submit">Login</button>
-      </form>
+      <div className="p-6">
+
+        <AddRisk fetchRisks={fetchRisks} />
+
+        <h1 className="text-3xl font-bold mb-6">
+          Risk Dashboard
+        </h1>
+
+        {error && (
+
+          <p className="text-red-500 mb-4">
+            {error}
+          </p>
+        )}
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          {risks.map((risk) => (
+
+            <RiskCard
+              key={risk.id}
+              risk={risk}
+            />
+          ))}
+
+        </div>
+
+      </div>
+
     </div>
   );
-}
+};
 
-export default Login;
+export default Dashboard;
